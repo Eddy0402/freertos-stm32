@@ -60,14 +60,14 @@ OBJS += \
       #$(PWD)/CORTEX_M4F_STM32F4/stm32f4xx_it.o \
 
 OBJS += \
-      $(PWD)/croutine.o \
-      $(PWD)/event_groups.o \
-      $(PWD)/list.o \
-      $(PWD)/queue.o \
-      $(PWD)/tasks.o \
-      $(PWD)/timers.o \
-      $(PWD)/portable/GCC/ARM_CM4F/port.o \
-      $(PWD)/portable/MemMang/heap_1.o \
+      $(PWD)/freertos/src/croutine.o \
+      $(PWD)/freertos/src/event_groups.o \
+      $(PWD)/freertos/src/list.o \
+      $(PWD)/freertos/src/queue.o \
+      $(PWD)/freertos/src/tasks.o \
+      $(PWD)/freertos/src/timers.o \
+      $(PWD)/freertos/portable/GCC/ARM_CM4F/port.o \
+      $(PWD)/freertos/portable/MemMang/heap_1.o \
 
 OBJS += \
     $(PWD)/CORTEX_M4F_STM32F4/Libraries/STM32F4xx_StdPeriph_Driver/src/misc.o \
@@ -96,7 +96,8 @@ CFLAGS += -I $(PWD)/CORTEX_M4F_STM32F4/traffic/include
 CFLAGS += -DUSE_STDPERIPH_DRIVER
 CFLAGS += -I $(PWD)/CORTEX_M4F_STM32F4 \
 	  -I $(PWD)/include \
-	  -I $(PWD)/portable/GCC/ARM_CM4F \
+	  -I $(PWD)/freertos/include \
+	  -I $(PWD)/freertos/portable/GCC/ARM_CM4F \
 	  -I $(PWD)/CORTEX_M4F_STM32F4/board \
 	  -I $(PWD)/CORTEX_M4F_STM32F4/Libraries/CMSIS/Device/ST/STM32F4xx/Include \
 	  -I $(PWD)/CORTEX_M4F_STM32F4/Libraries/CMSIS/Include \
