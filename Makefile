@@ -1,8 +1,13 @@
 PROJECT = traffic
 
-EXECUTABLE = $(PROJECT).elf
-BIN_IMAGE = $(PROJECT).bin
-HEX_IMAGE = $(PROJECT).hex
+OUTDIR = build
+
+EXECUTABLE = $(OUTDIR)/$(PROJECT).elf
+BIN_IMAGE = $(OUTDIR)/$(PROJECT).bin
+HEX_IMAGE = $(OUTDIR)/$(PROJECT).hex
+PROJECT_LST = $(OUTDIR)/$(PROJECT).lst
+
+TARGET = $(PROJECT)
 
 # set the path to STM32F429I-Discovery firmware package
 STDP ?= ../STM32F429I-Discovery_FW_V1.0.1
@@ -46,70 +51,65 @@ CFLAGS += -DSTM32F429_439xx
 CFLAGS += -DVECT_TAB_FLASH
 LDFLAGS += -T $(PWD)/CORTEX_M4F_STM32F4/stm32f429zi_flash.ld
 
-# STARTUP FILE
-OBJS += $(PWD)/CORTEX_M4F_STM32F4/startup_stm32f429_439xx.o
-
 # STM32F4xx_StdPeriph_Driver
 CFLAGS += -DUSE_STDPERIPH_DRIVER
 CFLAGS += -D"assert_param(expr)=((void)0)"
 
+# STARTUP FILE
+SRC += CORTEX_M4F_STM32F4/startup/startup_stm32f429_439xx.s \
+       CORTEX_M4F_STM32F4/startup/system_stm32f4xx.s \
+
 #My restart
-OBJS += \
-      $(PWD)/CORTEX_M4F_STM32F4/main.o \
-      $(PWD)/CORTEX_M4F_STM32F4/startup/system_stm32f4xx.o \
-      #$(PWD)/CORTEX_M4F_STM32F4/stm32f4xx_it.o \
 
-OBJS += \
-      $(PWD)/freertos/src/croutine.o \
-      $(PWD)/freertos/src/event_groups.o \
-      $(PWD)/freertos/src/list.o \
-      $(PWD)/freertos/src/queue.o \
-      $(PWD)/freertos/src/tasks.o \
-      $(PWD)/freertos/src/timers.o \
-      $(PWD)/freertos/portable/GCC/ARM_CM4F/port.o \
-      $(PWD)/freertos/portable/MemMang/heap_1.o \
+SRCDIR = src \
+         freertos/src \
 
-OBJS += \
-    $(PWD)/CORTEX_M4F_STM32F4/Libraries/STM32F4xx_StdPeriph_Driver/src/misc.o \
-    $(PWD)/CORTEX_M4F_STM32F4/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_gpio.o \
-    $(PWD)/CORTEX_M4F_STM32F4/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rcc.o \
-    $(PWD)/CORTEX_M4F_STM32F4/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_usart.o \
-    $(PWD)/CORTEX_M4F_STM32F4/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_syscfg.o \
-    $(PWD)/CORTEX_M4F_STM32F4/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_i2c.o \
-    $(PWD)/CORTEX_M4F_STM32F4/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_dma.o \
-    $(PWD)/CORTEX_M4F_STM32F4/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.o \
-    $(PWD)/CORTEX_M4F_STM32F4/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.o \
-    $(PWD)/CORTEX_M4F_STM32F4/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_dma2d.o \
-    $(PWD)/CORTEX_M4F_STM32F4/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_ltdc.o \
-    $(PWD)/CORTEX_M4F_STM32F4/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_fmc.o \
-    $(PWD)/CORTEX_M4F_STM32F4/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.o \
-    $(PWD)/Utilities/STM32F429I-Discovery/stm32f429i_discovery.o \
-    $(PWD)/Utilities/STM32F429I-Discovery/stm32f429i_discovery_sdram.o \
-    $(PWD)/Utilities/STM32F429I-Discovery/stm32f429i_discovery_lcd.o \
-    $(PWD)/Utilities/STM32F429I-Discovery/stm32f429i_discovery_ioe.o
+INCDIR = include \
+         freertos/include \
+         CORTEX_M4F_STM32F4 \
+         freertos/portable/GCC/ARM_CM4F \
+         CORTEX_M4F_STM32F4/board \
+         Utilities/STM32F429I-Discovery \
+         Utilities/Libraries/CMSIS/Device/ST/STM32F4xx/Include \
+         Utilities/Libraries/CMSIS/Include \
+         Utilities/Libraries/STM32F4xx_StdPeriph_Driver/inc \
+
+INCLUDES = $(addprefix -I,$(INCDIR))
+SRC += $(wildcard $(addsuffix /*.c,$(SRCDIR))) \
+       $(wildcard $(addsuffix /*.s,$(SRCDIR))) \
+       freertos/portable/GCC/ARM_CM4F/port.c \
+       freertos/portable/MemMang/heap_1.c \
+       Utilities/Libraries/STM32F4xx_StdPeriph_Driver/src/misc.c \
+       Utilities/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_gpio.c \
+       Utilities/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rcc.c \
+       Utilities/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_usart.c \
+       Utilities/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_syscfg.c \
+       Utilities/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_i2c.c \
+       Utilities/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_dma.c \
+       Utilities/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.c \
+       Utilities/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c \
+       Utilities/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_dma2d.c \
+       Utilities/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_ltdc.c \
+       Utilities/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_fmc.c \
+       Utilities/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c \
+       Utilities/STM32F429I-Discovery/stm32f429i_discovery.c \
+       Utilities/STM32F429I-Discovery/stm32f429i_discovery_sdram.c \
+       Utilities/STM32F429I-Discovery/stm32f429i_discovery_lcd.c \
+       Utilities/STM32F429I-Discovery/stm32f429i_discovery_ioe.c
+
+
+OBJS := $(addprefix $(OUTDIR)/,$(patsubst %.s,%.o,$(SRC:.c=.o)))
 
 # Traffic
-OBJS += $(PWD)/CORTEX_M4F_STM32F4/traffic/draw_graph.o
-OBJS += $(PWD)/CORTEX_M4F_STM32F4/traffic/move_car.o
-CFLAGS += -I $(PWD)/CORTEX_M4F_STM32F4/traffic/include
-
 CFLAGS += -DUSE_STDPERIPH_DRIVER
-CFLAGS += -I $(PWD)/CORTEX_M4F_STM32F4 \
-	  -I $(PWD)/include \
-	  -I $(PWD)/freertos/include \
-	  -I $(PWD)/freertos/portable/GCC/ARM_CM4F \
-	  -I $(PWD)/CORTEX_M4F_STM32F4/board \
-	  -I $(PWD)/CORTEX_M4F_STM32F4/Libraries/CMSIS/Device/ST/STM32F4xx/Include \
-	  -I $(PWD)/CORTEX_M4F_STM32F4/Libraries/CMSIS/Include \
-	  -I $(PWD)/CORTEX_M4F_STM32F4/Libraries/STM32F4xx_StdPeriph_Driver/inc \
-	  -I $(PWD)/Utilities/STM32F429I-Discovery
+CFLAGS += $(INCLUDES)
 
 all: $(BIN_IMAGE)
 
 $(BIN_IMAGE): $(EXECUTABLE)
 	$(OBJCOPY) -O binary $^ $@
 	$(OBJCOPY) -O ihex $^ $(HEX_IMAGE)
-	$(OBJDUMP) -h -S -D $(EXECUTABLE) > $(PROJECT).lst
+	$(OBJDUMP) -h -S -D $(EXECUTABLE) > $(PROJECT_LST)
 	$(SIZE) $(EXECUTABLE)
 	
 $(EXECUTABLE): $(OBJS)
@@ -117,11 +117,15 @@ $(EXECUTABLE): $(OBJS)
 		--start-group $(LIBS) --end-group \
 		$(LDFLAGS)
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+$(OUTDIR)/%.o: %.c
+	@mkdir -p $(dir $@)
+	@echo "    CC      "$@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
-%.o: %.S
-	$(CC) $(CFLAGS) -c $< -o $@
+$(OUTDIR)/%.o: %.s
+	@mkdir -p $(dir $@)
+	@echo "    CC      "$@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 flash:
 	st-flash write $(BIN_IMAGE) 0x8000000
@@ -142,4 +146,9 @@ clean:
 	rm -rf $(BIN_IMAGE)
 	rm -rf $(HEX_IMAGE)
 	rm -f $(OBJS)
-	rm -f $(PROJECT).lst
+	rm -f $(PROJECT_LST)
+
+MAKDIR = mk
+MAK = $(wildcard $(MAKDIR)/*.mk)
+
+include $(MAK)
