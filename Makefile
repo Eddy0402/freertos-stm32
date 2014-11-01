@@ -11,6 +11,7 @@ TARGET = $(PROJECT)
 
 # set the path to STM32F429I-Discovery firmware package
 STDP ?= ../STM32F429I-Discovery_FW_V1.0.1
+STMCUBE ?= ../STM32Cube_FW_F4_V1.3.0
 
 # Toolchain configurations
 CROSS_COMPILE ?= arm-none-eabi-
@@ -19,6 +20,9 @@ LD = $(CROSS_COMPILE)ld
 OBJCOPY = $(CROSS_COMPILE)objcopy
 OBJDUMP = $(CROSS_COMPILE)objdump
 SIZE = $(CROSS_COMPILE)size
+
+# Linker script
+LD_SCRIPT = $(PWD)/stm32f429zi_flash.ld
 
 # Cortex-M4 implements the ARMv7E-M architecture
 CPU = cortex-m4
@@ -32,6 +36,7 @@ define get_library_path
 endef
 LDFLAGS += -L $(call get_library_path,libc.a)
 LDFLAGS += -L $(call get_library_path,libgcc.a)
+LDFLAGS += -T $(LD_SCRIPT)
 
 # Basic configurations
 CFLAGS += -g -std=c99
@@ -49,17 +54,14 @@ CFLAGS += -DSTM32F429_439xx
 
 # to run from FLASH
 CFLAGS += -DVECT_TAB_FLASH
-LDFLAGS += -T $(PWD)/CORTEX_M4F_STM32F4/stm32f429zi_flash.ld
 
 # STM32F4xx_StdPeriph_Driver
 CFLAGS += -DUSE_STDPERIPH_DRIVER
 CFLAGS += -D"assert_param(expr)=((void)0)"
 
 # STARTUP FILE
-SRC += CORTEX_M4F_STM32F4/startup/startup_stm32f429_439xx.s \
-       CORTEX_M4F_STM32F4/startup/system_stm32f4xx.s \
-
-#My restart
+SRC += startup/startup_stm32f429_439xx.s \
+       startup/system_stm32f4xx.s \
 
 SRCDIR = src \
          freertos/src \

@@ -68,8 +68,8 @@ int main(void)
 	RCC_AHB2PeriphClockCmd(RCC_AHB2Periph_RNG, ENABLE);
 	RNG_Cmd(ENABLE);
 	
-	xTaskCreate(Temp, (char *) "Button Event Task", 256,
-		NULL, tskIDLE_PRIORITY + 1, NULL);
+//	xTaskCreate(Temp, (char *) "Button Event Task", 256,
+//		NULL, tskIDLE_PRIORITY + 1, NULL);
 
 	create_game_tasks();
 
