@@ -25,3 +25,6 @@
 
 # Vim
 *.swp
+
+# build output
+build/*

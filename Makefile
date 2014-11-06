@@ -108,14 +108,18 @@ CFLAGS += $(INCLUDES)
 
 all: $(BIN_IMAGE)
 
+MAKDIR = mk
+MAK = $(wildcard $(MAKDIR)/*.mk)
+include $(MAK)
+
 $(BIN_IMAGE): $(EXECUTABLE)
 	$(OBJCOPY) -O binary $^ $@
 	$(OBJCOPY) -O ihex $^ $(HEX_IMAGE)
 	$(OBJDUMP) -h -S -D $(EXECUTABLE) > $(PROJECT_LST)
 	$(SIZE) $(EXECUTABLE)
-	
-$(EXECUTABLE): $(OBJS)
-	$(LD) -o $@ $(OBJS) \
+
+$(EXECUTABLE): $(OBJS) $(DAT)
+	$(LD) -o $@ $^ \
 		--start-group $(LIBS) --end-group \
 		$(LDFLAGS)
 
@@ -149,8 +153,3 @@ clean:
 	rm -rf $(HEX_IMAGE)
 	rm -f $(OBJS)
 	rm -f $(PROJECT_LST)
-
-MAKDIR = mk
-MAK = $(wildcard $(MAKDIR)/*.mk)
-
-include $(MAK)

@@ -80,6 +80,11 @@ SECTIONS
     . = ALIGN(4);
     *(.rodata)         /* .rodata sections (constants, strings, etc.) */
     *(.rodata*)        /* .rodata* sections (constants, strings, etc.) */
+
+    _sromfs = .;
+    *(.romfs.*)
+    _eromfs = .;
+
     . = ALIGN(4);
   } >FLASH
 
