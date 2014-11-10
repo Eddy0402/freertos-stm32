@@ -12,7 +12,7 @@ void RCC_Configuration(void)
 {
     /* GPIOA clock enable */
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);
-    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
 }
 
 void GPIO_Configuration(void)
@@ -24,30 +24,27 @@ void GPIO_Configuration(void)
     GPIO_InitStructure.GPIO_Pin = LED_GPIO_PIN;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(LED_GPIO_PORT, &GPIO_InitStructure);
 
     GPIO_InitStructure2.GPIO_Pin = GPIO_Pin_0;
     GPIO_InitStructure2.GPIO_Mode = GPIO_Mode_IN;
-    GPIO_InitStructure2.GPIO_OType = GPIO_OType_PP;
-    GPIO_InitStructure2.GPIO_PuPd = GPIO_PuPd_UP;
+    GPIO_InitStructure2.GPIO_PuPd = GPIO_PuPd_NOPULL;
     GPIO_InitStructure2.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOA, &GPIO_InitStructure2);
+    GPIO_Init(GPIOC, &GPIO_InitStructure2);
 
     GPIO_InitStructure3.GPIO_Pin = GPIO_Pin_1;
     GPIO_InitStructure3.GPIO_Mode = GPIO_Mode_OUT;
     GPIO_InitStructure3.GPIO_OType = GPIO_OType_PP;
-    GPIO_InitStructure3.GPIO_PuPd = GPIO_PuPd_NOPULL;
     GPIO_InitStructure3.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOA, &GPIO_InitStructure3);
+    GPIO_Init(GPIOC, &GPIO_InitStructure3);
 }
 
 void IT_Configuration(void){
     EXTI_InitTypeDef EXTI_InitStructure;
     NVIC_InitTypeDef NVIC_InitStructure;
 
-    SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource0); // PA0
+    SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOC, EXTI_PinSource0); // PA0
 
     EXTI_InitStructure.EXTI_Line = EXTI_Line0;
     EXTI_InitStructure.EXTI_LineCmd = ENABLE;
@@ -71,19 +68,7 @@ void EXTI0_IRQHandler(void){
 }
 
 void prvInit(){
-    //LCD init
-    LCD_Init();
-    IOE_Config();
-    LTDC_Cmd( ENABLE );
-
-    LCD_LayerInit();
-    LCD_SetLayer( LCD_FOREGROUND_LAYER );
-    LCD_Clear( LCD_COLOR_BLACK );
-    LCD_SetTextColor( LCD_COLOR_WHITE );
-
-    //Button
     STM_EVAL_PBInit( BUTTON_USER, BUTTON_MODE_GPIO );
-
     RCC_Configuration();
     GPIO_Configuration();
     IT_Configuration();
@@ -94,8 +79,10 @@ int main(void)
 {
     prvInit();
     while(1){
-        for(int i = 0;i < 1000000;++i);
-        GPIOA -> ODR ^= GPIO_Pin_1;
+        for(int i = 0;i < 10000000;++i);
+        GPIOC -> BSRRL = GPIO_Pin_1;
+        for(int i = 0;i < 10000000;++i);
+        GPIOC -> BSRRH = GPIO_Pin_1;
     }
 
 //    LED_GPIO_PORT->BSRRL  = LED_GPIO_PIN;   // On : Bit set reset register low
