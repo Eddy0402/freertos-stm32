@@ -80,7 +80,7 @@ INCLUDES = $(addprefix -I,$(INCDIR))
 SRC += $(wildcard $(addsuffix /*.c,$(SRCDIR))) \
        $(wildcard $(addsuffix /*.s,$(SRCDIR))) \
        freertos/portable/GCC/ARM_CM4F/port.c \
-       freertos/portable/MemMang/heap_1.c \
+       freertos/portable/MemMang/heap_2.c \
        Utilities/Libraries/STM32F4xx_StdPeriph_Driver/src/misc.c \
        Utilities/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_gpio.c \
        Utilities/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rcc.c \
