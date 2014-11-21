@@ -1,0 +1,1 @@
+-Iinclude -Ifreertos/include -ICORTEX_M4F_STM32F4 -Ifreertos/portable/GCC/ARM_CM4F -ICORTEX_M4F_STM32F4/board -IUtilities/STM32F429I-Discovery -IUtilities/Libraries/CMSIS/Device/ST/STM32F4xx/Include -IUtilities/Libraries/CMSIS/Include -I Utilities/Libraries/STM32F4xx_StdPeriph_Driver/inc -DSTM32F429_439xx -DUSE_STDPERIPH_DRIVER
